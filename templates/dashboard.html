@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Dashboard - Tunisian Top Gs</title>{% endblock title %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{% static "styles/chart.css" %}">
+    <link rel="stylesheet" href="{% static "styles/dashboard.css" %}">
+
+{% endblock head %}
+
+{% block header %}
+    {% include "components/navbar.html" %}
+{% endblock header %}
+
+{% block main %}
+<div class="dashboard-container">
+    <div class="dashboard-top">
+        <div class="dashboard-top-left">
+            <div class="top-left-dash">
+                <div class="top-balance">
+                    <div class="container-div-balance">
+                        <span class="title-balance">Students Balance</span>
+
+                        <span class="amount-balance balance" data-balance="{{dashboard.calculate_total_balance}}">
+                            {{dashboard.calculate_total_balance}}$
+                        </span>
+
+                    </div>
+
+                    <div class="container-div-balance">
+                        <span class="title-balance">Monthly Objective</span>
+                        <span class="amount-balance objectif">{{dashboard.objectif}}$</span>
+                    </div>
+
+                    <div class="container-div-balance">
+                        <div class="profits-divs">
+                            <span class="title-balance">Profits</span>
+                            <div class="icons-spans-balance-profits">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
+                                    fill="none">
+                                    <path
+                                        d="M5.40914 5.90914L4.04543 7.27284C3.54333 7.77495 2.72926 7.77495 2.22716 7.27284C1.72505 6.77074 1.72505 5.95667 2.22716 5.45457L3.59086 4.09086L0 0.5H9V9.5L5.40914 5.90914Z"
+                                        fill="#05CD99" />
+                                </svg>
+                                <span class="icons-up-green" data-change-percentage="{{dashboard.calculate_change_percentage}}">
+                                    {{dashboard.calculate_change_percentage}}%
+                                </span>
+                            </div>
+                        </div>
+                        <span class="amount-balance-profits profits" data-balance="{{dashboard.get_changes_today}}">
+                            +${{dashboard.get_changes_today}}
+                        </span>
+                    </div>
+
+                    <div class="container-div-balance">
+                        <div class="losses-divs">
+                            <span class="title-balance">Losses</span>
+                            <div class="icons-spans-balance-losses">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
+                                    fill="none">
+                                    <path
+                                        d="M5.40914 4.09086L4.04543 2.72716C3.54333 2.22505 2.72926 2.22505 2.22716 2.72716C1.72505 3.22926 1.72505 4.04333 2.22716 4.54543L3.59086 5.90914L0 9.5H9V0.5L5.40914 4.09086Z"
+                                        fill="#D83D6C" />
+                                </svg>
+                                <span class="icons-up-red" data-change-percentage="{{dashboard.calculate_change_percentage}}">
+                                    {{dashboard.calculate_change_percentage}}%
+                                </span>
+                            </div>
+                        </div>
+                        <span class="amount-balance-losses losses" data-balance="{{dashboard.get_changes_today}}">
+                            -${{dashboard.get_changes_today}}
+                        </span>
+                    </div>
+                </div>
+                <div class="charts">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <div class="dashboard-top-right">
+            <div class="add-transaction">
+                <div class="top-trensac">
+                    <div class="transc">
+                        <img src="{% static "assets/transaction.png" %}" alt="">
+                    </div>
+                    <div class="description-transaction">
+                        <span class="description-top-transaction"> Add your latest trades to keep tracking your
+                            profits and losses and participate in the competition</span>
+                    </div>
+                </div>
+                <div class="check-transaction">
+                    <div class="check-bf">
+                        <a href="#" class="text-check">CHECK YOUR TRANSACTIONS</a>
+                    </div>
+                    <div class="button-add">
+                        <button class="add-transaction-button openmodale button-30">
+                            Add Transaction
+                            <i data-lucide="move-right"></i>
+                        </button>
+                        <!-- Modal -->
+                        <div class="modale" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <a href="#" class="btn-close closemodale" aria-hidden="true">&times;</a>
+                            <div class="modal-header">
+                                <span>Add Your Latest Transaction</span>
+                                <span>We've missed you! Please put your proof to catch up on the ranking .</span>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    {% csrf_token %}
+                                    <div class="input-group">
+                                        <label for="pair">Pair: </label>
+                                        {{transactionForm.pair}}
+                                    </div>
+                                    <div class="input-group" style="flex-direction: column;">
+                                        <label for="amount">Amount: </label>
+                                        {{transactionForm.amount}}
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="type">Type: </label>
+                                        {{transactionForm.type}} 
+                                    </div>
+                                    <div class="file-upload">
+                                        <label for="chooseFile">Upload a prove:</label>
+                                        <div class="file-select">
+                                          <div class="file-select-button" id="fileName">Choose File</div>
+                                          <div class="file-select-name" id="noFile">No file chosen...</div> 
+                                          {{transactionForm.img}}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="add-transaction-button THEbutton openmodale button-30">
+                                            Add Transaction
+                                            <i data-lucide="move-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="member-of-month">
+                
+                <div class="title-membre">
+                    
+                    <span class="title-membre-text">Member of the month</span>
+                    
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5Z"
+                            stroke="#EBEBF5" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M9 6V9" stroke="#EBEBF5" stroke-opacity="0.3" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <circle cx="9" cy="12" r="0.75" fill="#EBEBF5" fill-opacity="0.3" />
+                    </svg>
+                </div>
+                <div class="middle-mfm">
+                    <div class="left-middle">
+                        <img class="user-picture" src="{{top_user.pfp.url}}" alt="top_user.user.username">
+                        <img class="rank-decoration" src="{% static "assets/8b845fca921819a55e8496fc497aaf36.png" %}" alt="">
+
+                    </div>
+                    <div class="right-middle-mfm">
+                        <div class="gookie">
+                            <div class="groupbagde">
+                            <div>
+                                <span class="name-user">{{top_user}}</span>
+                            </div>
+                            <div class="badges-user">
+
+                            </div>
+                        </div>
+                            <div>
+                                <span class="prgh-tn">Have earned the badge <span class="topG-text">TOP G</span> for being the best Student of the month . </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-showprofile">
+                    <a href="#" class="show-profile-button button-30">
+                        Show Profile
+                        <i data-lucide="move-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-bottom">
+        <div class="dashboard-bottom-left">
+            <div class="last-transaction-container">
+                <div class="tt-transaction">
+                    <span class="title-transaction">Last Transactions </span>
+                </div>
+                <div class="line-seperation"></div>
+                <div class="transactions-history">
+                    {% for transaction in transactions %}
+
+                    <div class="history-user-transc">
+                        <div class="ianloine">
+                            <div class="profile-picture-container">
+                                <img class="profile-user-transaction" src="{{transaction.user.pfp.url}}" alt="">
+                            </div>
+                            <div class="informations-user">
+                                <div class="name-fser">
+                                    <span class="foll">{{transaction.user.user.username}}</span>
+                                    {% for badge in transaction.user.badges.all %}
+                                        <img class="profile-user-badges" src="{{badge.icon.url}}" alt="{{badge}}">
+                                    {% endfor %}
+                                </div>
+                                <div class="date-badges">
+                                    {{transaction.date}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-transaction-info">
+                            <div class="data-transaction">
+                                <span class="data-transaction-text">
+                                    {{transaction.pair}} <span class="transaction-info-text ${auntClass}">{{transaction.type}}</span>
+                                </span>
+                            </div>
+                            <div class="transaction-amount-container {{transaction.type}}-background">
+                                <span class="amount-trade">{{transaction.amount}}</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ranking-container">
+                <div class="tt-transaction">
+                    <span class="title-ranking">Leaderboard </span>
+                </div>
+                <div class="line-seperation"></div>
+                    <div class="ranking-user">
+                        {% for User in top_users %}
+                        
+                            <div class="user-ranking-list">
+                                <div class="profile-user-ranking">
+                                    <img src="../static/assets/top{{forloop.counter}}.svg" alt="{{User.rank}}" class="ranking-pic">
+                                    <img class="profile-user-pic" src="{{User.pfp.url}}" alt="">
+                                    <span class="profile-user-name">{{ User.user.username }}</span>
+                                </div>
+                                <div class="ranking-amount-container">
+                                    <span class="amount-trade">${{ User.calculate_balance }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+            </div>
+        </div>
+        <div class="dashboard-bottom-right">
+            <div class="tracker-container">
+            
+                <div class="coins-tracker">
+                  <div class="picture-icon-crypto">
+                        <img src="{% static 'assets/crypto-coin-btc-icon.png' %}" alt="BTC">
+                    </div>
+                    <div class="tracker-title-wrapper">
+                        <span class="crypto-tracking-name">BTC</span>
+                        <span class="percentage-down-up btc">0%</span>
+                    </div>
+                    <div class="tracker-chart">
+                        <img src="{% static 'assets/chart-orange.svg' %}" alt="BTC">
+                    </div>
+                    <div class="price-coin">
+                        <span class="price-v btc">$0</span>
+                    </div>
+
+                </div>
+                <div class="coins-tracker">
+                    <div class="picture-icon-crypto">
+                          <img src="{% static 'assets/xrp.svg' %}" alt="ETH">
+                      </div>
+                      <div class="tracker-title-wrapper">
+                          <span class="crypto-tracking-name">ETH</span>
+                          <span class="percentage-down-up eth">0%</span>
+                      </div>
+                      <div class="tracker-chart">
+                          <img src="{% static 'assets/xrp-icon.svg' %}" alt="ETH">
+                      </div>
+                      <div class="price-coin">
+                          <span class="price-v eth">$0</span>
+                      </div>
+  
+                  </div>
+                  <div class="coins-tracker">
+                    <div class="picture-icon-crypto">
+                          <img src="{% static 'assets/ltc.svg' %}" alt="SOL">
+                      </div>
+                      <div class="tracker-title-wrapper">
+                          <span class="crypto-tracking-name">LTC</span>
+                          <span class="percentage-down-up ltc">0%</span>
+                      </div>
+                      <div class="tracker-chart">
+                          <img src="{% static 'assets/chart-gris.svg' %}" alt="SOL">
+                      </div>
+                      <div class="price-coin" >
+                          <span class="price-v ltc" > $0</span>
+                      </div>
+  
+                  </div>
+            </div>
+            <div class="support-container">
+                <div class="support-Title">
+                    Need Support <i data-lucide="info"></i>
+                </div>
+            
+                <div class="support-paragraph">
+                    <span>
+                        If you faced any problem or you need help just feel free to tell us, we are available.
+                    </span>
+                </div>
+                <a href="#" class="show-profile-button button-30">
+                    Contact Us
+                    <i data-lucide="move-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+
+{% block scripts %}
+    <script src="{% static "js/chart.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static "js/dashboard.js" %}"></script>
+{% endblock scripts %}
