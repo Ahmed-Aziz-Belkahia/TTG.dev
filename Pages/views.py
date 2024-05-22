@@ -50,14 +50,12 @@ from Users.models import CustomUser
 from django.shortcuts import render
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from Pages.models import Feedback, Podcast, featuredYoutubeVideo
+from Pages.models import Feedback, Podcast, FeaturedYoutubeVideo
 
 def homeView(request, *args, **kwargs):
     courses = request.user.customuser.enrolled_courses.all()
-    # featured_product = Home.objects.all().first().featured_product
     featured_course = Home.objects.all().first().featured_course
     podcasts = Podcast.objects.all()
-    # video_id = featuredYoutubeVideo.objects.first().video_id
     next_points_goal = 500
     quests = Quest.objects.all()
     quests_and_progress = []
@@ -68,7 +66,13 @@ def homeView(request, *args, **kwargs):
 
     print(course_progress(request))
     print(level_progress(request))
-    return render(request, 'home.html', {"courses": courses, "next_points_goal": next_points_goal,"feedback_options": Feedback.FEEDBACKS, "featured_course": featured_course, "podcasts": podcasts, "quests_and_progress": quests_and_progress})
+    return render(request, 'home.html', 
+                  {"courses": courses, 
+                   "next_points_goal": next_points_goal,
+                   "feedback_options": Feedback.FEEDBACKS, 
+                   "featured_course": featured_course,
+                   "podcasts": podcasts, 
+                   "quests_and_progress": quests_and_progress})
 
 
 def shopView(request, *args, **kwargs):

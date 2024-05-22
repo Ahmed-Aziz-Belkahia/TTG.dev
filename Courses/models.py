@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Sum
 from django.utils.html import mark_safe
 from django_ckeditor_5.fields import CKEditor5Field
+
 class Course(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()

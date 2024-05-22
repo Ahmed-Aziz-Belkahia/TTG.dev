@@ -3,10 +3,8 @@ from django.db import models
 from Ranks.models import Rank
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from Courses.models import Course, CourseProgression, Video
 from django.utils import timezone
 from django.utils.html import mark_safe
-
 
 class Badge(models.Model):
     index = models.IntegerField(default=0)
@@ -30,9 +28,9 @@ class CustomUser(models.Model):
     rank = models.ManyToManyField(Rank, blank=True)
     badges = models.ManyToManyField(Badge, related_name='customusers', blank=True)
     bio = models.TextField(max_length=150, null=True, blank=True)
-    enrolled_courses = models.ManyToManyField(Course, related_name='enrolled_users', blank=True)
+    enrolled_courses = models.ManyToManyField('Courses.Course', related_name='enrolled_users', blank=True)
     last_added_points_time = models.DateTimeField(blank=True, null=True)
-    liked_videos = models.ManyToManyField(Video, blank=True)
+    # liked_videos = models.ManyToManyField('Courses.Video', blank=True)
 
     email = models.EmailField(blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
@@ -54,14 +52,14 @@ class CustomUser(models.Model):
         return profits - losses
 
     def calculate_overall_progress(self):
-        enrolled_courses = self.enrolled_courses.all()
+        # enrolled_courses = self.enrolled_courses.all()
         overall_progress = 0
-        total_courses = enrolled_courses.count()
+        total_courses = 0  # enrolled_courses.count()
 
-        for course in enrolled_courses:
-            course_progression, created = CourseProgression.objects.get_or_create(user=self, course=course)
-            course_progress = course_progression.calculate_progression()
-            overall_progress += course_progress
+        # for course in enrolled_courses:
+        #     course_progression, created = CourseProgression.objects.get_or_create(user=self, course=course)
+        #     course_progress = course_progression.calculate_progression()
+        #     overall_progress += course_progress
 
         if total_courses > 0:
             overall_progress_percentage = (overall_progress / (total_courses * 100)) * 100
@@ -129,15 +127,12 @@ def save_custom_user(sender, instance, **kwargs):
         pass
 
 
-# Les signaux pour la gestion de l'email sont déjà définis dans Users/models.py
 @receiver(pre_save, sender=CustomUser)
 def update_user_email(sender, instance, **kwargs):
-    # Vérifie si l'email a changé
     if instance.pk:
         try:
             original_instance = CustomUser.objects.get(pk=instance.pk)
             if original_instance.email != instance.email:
-                # Met à jour l'email dans l'utilisateur associé sans déclencher le signal
                 User.objects.filter(pk=instance.user.pk).update(email=instance.email)
         except CustomUser.DoesNotExist:
             pass
