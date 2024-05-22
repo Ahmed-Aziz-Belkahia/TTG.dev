@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 
 class Home(models.Model):
-    featured_product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    # featured_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     featured_course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
 
 class Dashboard(models.Model):

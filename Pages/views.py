@@ -54,10 +54,10 @@ from Pages.models import Feedback, Podcast, featuredYoutubeVideo
 
 def homeView(request, *args, **kwargs):
     courses = request.user.customuser.enrolled_courses.all()
-    featured_product = Home.objects.all().first().featured_product
+    # featured_product = Home.objects.all().first().featured_product
     featured_course = Home.objects.all().first().featured_course
     podcasts = Podcast.objects.all()
-    video_id = featuredYoutubeVideo.objects.first().video_id
+    # video_id = featuredYoutubeVideo.objects.first().video_id
     next_points_goal = 500
     quests = Quest.objects.all()
     quests_and_progress = []
@@ -68,7 +68,7 @@ def homeView(request, *args, **kwargs):
 
     print(course_progress(request))
     print(level_progress(request))
-    return render(request, 'home.html', {"courses": courses, "next_points_goal": next_points_goal, "featured_product": featured_product, "feedback_options": Feedback.FEEDBACKS, "featured_course": featured_course, "podcasts": podcasts, "video_id": video_id, "quests_and_progress": quests_and_progress})
+    return render(request, 'home.html', {"courses": courses, "next_points_goal": next_points_goal,"feedback_options": Feedback.FEEDBACKS, "featured_course": featured_course, "podcasts": podcasts, "quests_and_progress": quests_and_progress})
 
 
 def shopView(request, *args, **kwargs):
@@ -683,7 +683,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 def serverChatView(request, room_name, *args, **kwargs):
     customuser_id = request.user.customuser.id
     room = get_object_or_404(Room, name=room_name)
-    messages = Message.objects.filter(room=room).order_by('timestamp').values('user__user__username', 'content', 'user__pfp', 'timestamp', 'file')
+    messages = Message.objects.filter(room=room).order_by('timestamp').values('user__user__username', 'content', 'user__pfp', 'timestamp')
     messages_list = list(messages)
     
     # Convert QuerySet to list of dictionaries

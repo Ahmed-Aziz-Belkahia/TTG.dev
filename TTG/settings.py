@@ -69,6 +69,9 @@ INSTALLED_APPS = [
     'daphne',
     'livereload',
 
+    'widget_tweaks',
+
+
     'ckeditor_uploader',
     'django_ckeditor_5',
 

@@ -20,7 +20,9 @@
 	width: 80%;
 
 }
-
+.wrap-courses-selection{
+	
+}
 .schedule-header {
 	display: flex;
 	flex-direction: row;
@@ -242,6 +244,7 @@ form label {
 	font-style: normal;
 	font-weight: 300;
 	line-height: normal;
+	cursor: pointer;
 }
 
 form input {
@@ -604,12 +607,12 @@ ul.tabs li.current {
 
 /* Input field styling */
 .calendar-container input[type="datetime-local"] {
-	width: 40vh;
+	width: 35vh;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;

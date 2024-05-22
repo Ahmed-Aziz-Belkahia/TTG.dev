@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/admin/admin_custom.css' %}">
+{% endblock head %}
+
+{% block content %}
+    <div class="dropdown">
+        <button class="dropbtn">Levels</button>
+        <div class="dropdown-content">
+            {% if adminform.form.instance.pk %}
+                {% for level in adminform.form.instance.admin_levels.all %}
+                    <a href="#" class="toggle-level" data-level-id="{{ level.id }}">{{ level.title }}</a>
+                {% endfor %}
+            {% else %}
+                <p>Save the course to add levels.</p>
+            {% endif %}
+        </div>
+    </div>
+    <script src="{% static 'js/admin_custom.js' %}"></script>
+    {{ block.super }}
+{% endblock %}

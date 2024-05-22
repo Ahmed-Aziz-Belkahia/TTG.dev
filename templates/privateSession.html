@@ -103,10 +103,9 @@
                                 </div>
                             </div>
                         </div>
-                        <style>
-                            
-                        </style>
+                        
                         <span class="id_cours">Course:</span>
+                        <div class="wrap-courses-selection">
                         {% for course in form.fields.cours.queryset %}
                        
                         <div class="checkbox-container">
@@ -115,6 +114,7 @@
                         </div>
 
                         {% endfor %}
+                    </div>
                         <div class="TimeSelection">
                             <span>Select Time</span>
                             <div class="TimesAvailable">

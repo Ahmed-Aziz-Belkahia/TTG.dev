@@ -2,15 +2,21 @@ from django import forms
 from .models import Transaction
 
 class TransactionForm(forms.ModelForm):
+    TYPE_CHOICES = [
+        ('profit', 'Profit'),
+        ('loss', 'Loss'),
+    ]
+
+    type = forms.ChoiceField(choices=TYPE_CHOICES)
+
     class Meta:
         model = Transaction
         fields = ['type', 'pair', 'amount', 'img', 'status']
         widgets = {
-            'type': forms.Select(choices=Transaction.TYPE, attrs={'class': 'form-control'}),
-            'pair': forms.TextInput(attrs={'class': 'form-control'}),
-            'amount': forms.NumberInput(attrs={'class': 'form-control'}),
-            'img': forms.FileInput(attrs={'class': 'form-control'}),
-            'status': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'pair': forms.TextInput(attrs={'placeholder': 'e.g., BTC/USD'}),
+            'amount': forms.NumberInput(attrs={'placeholder': 'e.g., 1000'}),
+            'img': forms.ClearableFileInput(attrs={'placeholder': 'Upload your proof'}),
+            'status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 class OrderForm(forms.Form):

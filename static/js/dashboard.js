@@ -1,11 +1,22 @@
+// Generate labels for the last 30 days
+function getLast30Days() {
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        days.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    return days;
+}
+
 const shadowPlugin = {
     id: 'shadowPlugin',
-    afterDatasetsDraw: function(chart, easing) {
+    afterDatasetsDraw: function(chart) {
         var ctx = chart.ctx;
         chart.data.datasets.forEach(function(dataset, i) {
             var meta = chart.getDatasetMeta(i);
             if (!meta.hidden) {
-                meta.data.forEach(function(element, index) {
+                meta.data.forEach(function(element) {
                     // Draw the shadow under each point
                     ctx.fillStyle = '#056d93'; // Shadow color
                     ctx.shadowColor = '#056d93'; // Same color as the line
@@ -21,25 +32,65 @@ const shadowPlugin = {
     }
 };
 
-// Register the plugin
-Chart.register(shadowPlugin);
+// Custom plugin to change line color based on y-value
+const colorChangePlugin = {
+    id: 'colorChangePlugin',
+    beforeDatasetsDraw: function(chart) {
+        var ctx = chart.ctx;
+        chart.data.datasets.forEach(function(dataset) {
+            var meta = chart.getDatasetMeta(0);
+            ctx.save();
+            ctx.lineWidth = dataset.borderWidth;
 
-// Chart initialization
+            for (let i = 0; i < meta.data.length - 1; i++) {
+                const curr = meta.data[i];
+                const next = meta.data[i + 1];
+
+                if (curr.parsed && next.parsed) {
+                    ctx.beginPath();
+                    ctx.moveTo(curr.x, curr.y);
+                    ctx.lineTo(next.x, next.y);
+
+                    // Determine color based on y-value
+                    if (curr.parsed.y >= 0) {
+                        ctx.strokeStyle = 'green';
+                    } else {
+                        ctx.strokeStyle = 'red';
+                    }
+
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+        });
+    }
+};
+
+// Register the plugins
+Chart.register(shadowPlugin, colorChangePlugin);
+
+// Generate labels for the last 30 days
+const labels = getLast30Days();
+
+// Generate sample data for the last 30 days
+const data = [9455, 2328, 6639, 5419, 3645, 2098, 8505, 4709, 8181, 9762, 3647, 7475, 5673, 2859, 7447, 2229, 1910, 8149, 7383, 3944, 8297, 5862, 7674, 5735, 7148, 2606, 1839, 3828, 3345, 3607];
+
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
+        labels: labels,
         datasets: [{
             label: 'Total Balance',
-            data: [9455, 2328, 6639, 5419, 3645, 2098, 8505, 4709, 8181, 9762, 3647, 7475, 5673, 2859, 7447, 2229, 1910, 8149, 7383, 3944, 8297, 5862, 7674, 5735, 7148, 2606, 1839, 3828, 3345, 3607, 7443, 10000],
+            data: data,
             borderColor: '#a45cf6',
-            borderWidth: 3.5,
-            lineTension: 0.5,
+            borderWidth: 3.3,
+            lineTension: 0.55, // Set the tension for a wavy effect
             fill: true,
             backgroundColor: 'rgba(164, 92, 246, 0.09)', // Gradient fill under the line
             pointRadius: 0.5,
-            pointBackgroundColor: '#079c4b',
+            pointBackgroundColor: '#BDC4CD',
             pointBorderColor: 'white',
         }]
     },
@@ -50,7 +101,7 @@ var myChart = new Chart(ctx, {
             legend: {
                 display: false,
                 labels: {
-                    color: 'white',
+                    color: '#f5f5f5b9',
                     font: {
                         family: 'Poppins' // Poppins font for legend labels
                     }
@@ -59,14 +110,8 @@ var myChart = new Chart(ctx, {
             tooltip: {
                 callbacks: {
                     title: function(tooltipItems) {
-                        // Assuming you want to map specific days to months for demonstration
-                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                        // Use the first tooltip item to determine the label
-                        let day = tooltipItems[0].label;
-                        // Example mapping: every month is 30 days for simplicity, adjust according to your data
-                        let monthIndex = Math.floor(day / 30); // This will work for a simplified case
-                        // Return the month name; adjust logic as needed for accurate mapping
-                        return monthNames[monthIndex];
+                        // Return the day for the tooltip title
+                        return tooltipItems[0].label;
                     },
                     label: function(context) {
                         var label = context.dataset.label || '';
@@ -74,7 +119,7 @@ var myChart = new Chart(ctx, {
                             label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                            label +=  context.parsed.y + ' $' ;
+                            label += context.parsed.y + ' $';
                         }
                         return label;
                     }
@@ -146,11 +191,20 @@ function newDayUpdateChart(newBalance) {
 function updateChart(newBalance) {
     console.log("Updating Chart current point...");
 
-    myChart.data.datasets[0].data[31] = newBalance
+    myChart.data.datasets[0].data[myChart.data.datasets[0].data.length - 1] = newBalance;
     var newData = myChart.data.datasets[0].data;
 
     myChart.data.datasets[0].data = newData;
     myChart.update();
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this, args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
 }
 
 function updateDashboard() {
@@ -249,53 +303,64 @@ function updateTransactions() {
     ajaxRequest('GET', '/getTransactions/', null, function(response) {
         if (response.success) {
             transactionHistoryElement.innerHTML = '';
-        
-            for (let i = 0; i < Math.min(4, response.transactions.length); i++) {
-                let transaction = response.transactions[i];
-                // Assign class based on transaction type
-                var amountClass = transaction.type === 'profit' ? 'profit-background' : 'loss-background';
-                var auntClass = transaction.type === 'profit' ? 'transaction-info-text' : 'transaction-info-text-loss';
-            
-                // Build HTML for badges
-                var badgesHTML = '';
-                transaction.badges.forEach(function(badge) {
-                    badgesHTML += `<img class="profile-user-badges" src="${badge.icon}" alt="${badge}">`;
-                });
-            
-                var transactionHTML = `
-                    <div class="history-user-transc">
-                        <div class="ianloine">
-                            <div class="profile-picture-container">
-                                <img class="profile-user-transaction" src="${transaction.pfp}" alt="">
-                            </div>
-                            <div class="informations-user">
-                                <div class="name-fser">
-                                    <span class="foll">${transaction.user}</span>
-                                    ${badgesHTML} <!-- Render badges here -->
-                                </div>
-                                <div class="date-badges">
-                                    ${transaction.date}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="data-transaction-info">
-                            <div class="data-transaction">
-                                <span class="data-transaction-text">
-                                    ${transaction.pair} <span class="transaction-info-text ${auntClass}">${transaction.type}</span>
-                                </span>
-                            </div>
-                            <div class="transaction-amount-container ${amountClass}">
-                                <span class="amount-trade">${transaction.amount} $</span>
-                            </div>
-                        </div>
+
+            if (response.transactions.length === 0) {
+                var noTransactionsHTML = `
+                    <div class="no-transactions-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0,0,256,256">
+                                <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M25,2c-7.2878,0 -13.78519,3.40209 -18,8.69922v-6.69922c0.0037,-0.2703 -0.10218,-0.53059 -0.29351,-0.72155c-0.19133,-0.19097 -0.45182,-0.29634 -0.72212,-0.29212c-0.55152,0.00862 -0.99193,0.46214 -0.98437,1.01367v10h10c0.36064,0.0051 0.69608,-0.18438 0.87789,-0.49587c0.18181,-0.3115 0.18181,-0.69676 0,-1.00825c-0.18181,-0.3115 -0.51725,-0.50097 -0.87789,-0.49587h-6.48047c3.84527,-4.86929 9.78778,-8 16.48047,-8c11.60953,0 21,9.39047 21,21c0,11.60953 -9.39047,21 -21,21h-0.00977h-1v0.91602c-0.0046,0.05524 -0.0046,0.11077 0,0.16602v0.91797h1c0.00326,0.00002 0.00651,0.00002 0.00977,0h1v-0.02539c12.22684,-0.52549 22,-10.61976 22,-22.97461c0,-12.69047 -10.30953,-23 -23,-23zM24,11v3.05273c-1.732,0.168 -3.13859,0.78089 -4.18359,1.83789c-1.826,1.847 -1.81741,4.34936 -1.81641,4.44336c0,4.302 3.7612,5.13855 6.7832,5.81055c3.235,0.717 5.2168,1.28847 5.2168,3.85547c0,3.93 -4.798,3.999 -5,4c-4.809,0 -4.995,-3.59781 -5,-4.00781l-1,0.00781h-1c0,1.944 1.284,5.51013 6,5.95313v3.04688h2v-3.06445c2.498,-0.306 6,-1.78455 6,-5.93555c0,-4.302 -3.7612,-5.13855 -6.7832,-5.81055c-3.235,-0.717 -5.2168,-1.28928 -5.2168,-3.86328c0,-0.011 0.00577,-1.14542 0.63477,-2.23242c0.803,-1.389 2.27223,-2.09375 4.36523,-2.09375c3.805,0 3.991,3.60472 4,4.01172l2,-0.02539c-0.024,-1.914 -1.132,-5.39902 -5,-5.91602v-3.07031zM2,24v1v0.01172v1h2v-1v-0.01172v-1zM4.09766,27.62305l-1.95508,0.42383l0.21094,0.97656l0.00391,0.01953l0.21094,0.97656l1.95508,-0.42187l-0.21094,-0.97852l-0.00391,-0.01758zM4.88477,31.21484l-1.85742,0.74219l0.36914,0.92773l0.00781,0.01953l0.37109,0.92773l1.85742,-0.74023l-0.37109,-0.92969l-0.00781,-0.01758zM6.29102,34.61328l-1.71289,1.0332l0.51758,0.85742l0.00977,0.01563l0.51758,0.85547l1.71094,-1.0332l-0.51562,-0.85547l-0.00977,-0.01758zM8.26758,37.71289l-1.52344,1.29492l0.64648,0.76172l0.01367,0.01563l0.64648,0.76172l1.52539,-1.29492l-0.64844,-0.76172l-0.01172,-0.01562zM10.75,40.42383l-1.29883,1.52148l0.76172,0.64844l0.01367,0.01367l0.76172,0.64844l1.29883,-1.52148l-0.76172,-0.64844l-0.01367,-0.01367zM13.66016,42.66602l-1.03711,1.70898l0.85547,0.51953l0.01563,0.00977l0.85547,0.51758l1.03711,-1.70898l-0.85547,-0.51953l-0.01562,-0.00977zM16.91016,44.36719l-0.74414,1.85742l0.92773,0.37109l0.01758,0.00781l0.92773,0.37305l0.74414,-1.85742l-0.92773,-0.37109l-0.01758,-0.00781zM20.4043,45.47656l-0.42773,1.95313l0.97656,0.21484l0.01953,0.00391l0.97656,0.21289l0.42773,-1.95312l-0.97656,-0.21484l-0.01953,-0.00391z"></path></g></g>
+                                </svg>
+                        No transactions have been added.
                     </div>
                 `;
-                transactionHistoryElement.insertAdjacentHTML('beforeend', transactionHTML);
+                transactionHistoryElement.insertAdjacentHTML('beforeend', noTransactionsHTML);
+            } else {
+                for (let i = 0; i < Math.min(4, response.transactions.length); i++) {
+                    let transaction = response.transactions[i];
+                    // Assign class based on transaction type
+                    var amountClass = transaction.type === 'profit' ? 'profit-background' : 'loss-background';
+                    var auntClass = transaction.type === 'profit' ? 'transaction-info-text' : 'transaction-info-text-loss';
+
+                    // Build HTML for badges
+                    var badgesHTML = '';
+                    transaction.badges.forEach(function(badge) {
+                        badgesHTML += `<img class="profile-user-badges" src="${badge.icon}" alt="${badge}">`;
+                    });
+
+                    var transactionHTML = `
+                        <div class="history-user-transc">
+                            <div class="ianloine">
+                                <div class="profile-picture-container">
+                                    <img class="profile-user-transaction" src="${transaction.pfp}" alt="">
+                                </div>
+                                <div class="informations-user">
+                                    <div class="name-fser">
+                                        <span class="foll">${transaction.user}</span>
+                                        ${badgesHTML} <!-- Render badges here -->
+                                    </div>
+                                    <div class="date-badges">
+                                        ${transaction.date}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="data-transaction-info">
+                                <div class="data-transaction">
+                                    <span class="data-transaction-text">
+                                        ${transaction.pair} <span class="transaction-info-text ${auntClass}">${transaction.type}</span>
+                                    </span>
+                                </div>
+                                <div class="transaction-amount-container ${amountClass}">
+                                    <span class="amount-trade">${transaction.amount} $</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    transactionHistoryElement.insertAdjacentHTML('beforeend', transactionHTML);
+                }
             }
         }
     }, null, true, "Update transactions", null)
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     var addTransactionButton = document.querySelector('.THEbutton');
@@ -303,55 +368,122 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault(); // Prevent the default form submission behavior
 
         // Serialize the form data
-        var formData = new FormData(document.querySelector('form'));
-        ajaxRequest('POST', '/add_transaction/', formData, function(response) {
-            if (response.success) {
-                console.log(response);
-                // Optionally, you can redirect or show a success message here
-                // remove opened class from div with modale 
-                $('.modale').removeClass('opened');
-                // Update the dashboard with the new transaction data
-                updateDashboard();
-                updateTransactions();
+        var formElement = document.querySelector('form');
+        var formData = new FormData(formElement);
+
+        $.ajax({
+            type: 'POST',
+            url: '/add_transaction/',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    console.log(response);
+                    // Optionally, you can redirect or show a success message here
+                    // Remove opened class from div with modale
+                    $('.modale').removeClass('opened');
+                    // Update the dashboard with the new transaction data
+                    updateDashboard();
+                    updateTransactions();
+                    // Show a success message
+                    showPopupMessage("Your transaction is under review.");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                showErrorPopupMessage("There was an error submitting your transaction.");
             }
-        }, null, true, "add transaction", null)
+        });
     });
 
+    var fileInput = document.querySelector('#id_img');
+    var fileNameDisplay = document.querySelector('#fileName');
+    var noFileDisplay = document.querySelector('#noFile');
+    var maxLength = 20; // Set the maximum length for the displayed file name
 
-    updateChart()
-    setInterval(updateChart, 1000);
+    fileInput.addEventListener('change', function() {
+        var fileName = this.files[0].name;
 
-    updateDashboard()
-    setInterval(updateDashboard, 10000);
-
-    /* updateTopUser()
-    setInterval(updateTopUser, 10000); */
-
-    /* updateRanking()
-    setInterval(updateRanking, 10000); */
-
-    /* updateTransactions();
-    setInterval(updateTransactions, 10000); */
-
-
-    $('.openmodale').click(function (e) {
-        e.preventDefault();
-        $('.modale').addClass('opened');
-    });
-    $('.closemodale').click(function (e) {
-        e.preventDefault();
-        $('.modale').removeClass('opened');
-    });
-    $('#chooseFile').bind('change', function () {
-        var filename = $("#chooseFile").val();
-        if (/^\s*$/.test(filename)) {
-            $(".file-upload").removeClass('active');
-            $("#noFile").text("No file chosen..."); 
+        if (fileName.length > maxLength) {
+            var truncatedFileName = fileName.slice(0, maxLength / 2) + '...' + fileName.slice(-maxLength / 2);
+            fileNameDisplay.textContent = truncatedFileName;
+            noFileDisplay.textContent = truncatedFileName;
         } else {
-            $(".file-upload").addClass('active');
-            $("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
+            fileNameDisplay.textContent = fileName;
+            noFileDisplay.textContent = fileName;
         }
     });
+});
 
-    /* ROLL ANIMATION HERE */
+function showPopupMessage(message) {
+    var popup = document.getElementById('popupMessage');
+    var popupSpan = document.getElementById('popupSpan');
+    popupSpan.textContent = message;
+    popup.style.display = 'block';
+
+    setTimeout(function() {
+        popup.classList.add('fade-out');
+        setTimeout(function() {
+            popup.style.display = 'none';
+            popup.classList.remove('fade-out');
+        }, 3000);
+    }, 2000);
+}
+
+function showErrorPopupMessage(message) {
+    var popup = document.getElementById('ErrorPopupMessage');
+    var popupSpan = document.getElementById('ErrorPopupSpan');
+    popupSpan.textContent = message;
+    popup.style.display = 'block';
+
+    setTimeout(function() {
+        popup.classList.add('fade-out');
+        setTimeout(function() {
+            popup.style.display = 'none';
+            popup.classList.remove('fade-out');
+        }, 1000);
+    }, 1000);
+}
+
+// Debounce the update functions
+const debouncedUpdateChart = debounce(updateChart, 300);
+const debouncedUpdateDashboard = debounce(updateDashboard, 1000);
+const debouncedUpdateTopUser = debounce(updateTopUser, 1000);
+const debouncedUpdateRanking = debounce(updateRanking, 1000);
+const debouncedUpdateTransactions = debounce(updateTransactions, 1000);
+
+// Update functions
+debouncedUpdateChart();
+setInterval(debouncedUpdateChart, 1000);
+
+debouncedUpdateDashboard();
+setInterval(debouncedUpdateDashboard, 10000);
+
+debouncedUpdateTopUser();
+setInterval(debouncedUpdateTopUser, 10000);
+
+debouncedUpdateRanking();
+setInterval(debouncedUpdateRanking, 10000);
+
+debouncedUpdateTransactions();
+setInterval(debouncedUpdateTransactions, 10000);
+
+$('.openmodale').click(function(e) {
+    e.preventDefault();
+    $('.modale').addClass('opened');
+});
+$('.closemodale').click(function(e) {
+    e.preventDefault();
+    $('.modale').removeClass('opened');
+});
+$('#chooseFile').bind('change', function() {
+    var filename = $("#chooseFile").val();
+    if (/^\s*$/.test(filename)) {
+        $(".file-upload").removeClass('active');
+        $("#noFile").text("No file chosen...");
+    } else {
+        $(".file-upload").addClass('active');
+        $("#noFile").text(filename.replace("C:\\fakepath\\", ""));
+    }
 });

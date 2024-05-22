@@ -1,10 +1,15 @@
 
-points_counter = document.querySelector(".points-counter")
-courseProgressionCounter = document.querySelector(".points-counter.points");
-courseProgressionSlider = document.querySelector(".progress-bar-inner.points");
-ajaxRequest('POST', "/getPoints/", null, function(response) {
+const pointsCounter = document.querySelector(".points-counter");
+const courseProgressionCounter = document.querySelector(".points-counter.points");
+const courseProgressionSlider = document.querySelector(".progress-bar-inner.points");
+
+function updateProgressBar(response) {
     courseProgressionCounter.innerText = response.points + "/" + response.goal;
-    courseProgressionSlider.style.width = "20%";
+    courseProgressionSlider.style.width = response.percentage + "%";
+}
+
+ajaxRequest('POST', "/getPoints/", null, function(response) {
+    updateProgressBar(response);
 }, function(response) {
     const errorMessageDiv = document.getElementById("errorMessage");
     errorMessageDiv.textContent = "An error occurred while processing your request.";
@@ -494,3 +499,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelector('.prev').addEventListener('click', previousTrack);
     loadTrack(0);
 });
+
+
+// ---------------------------------  Add the following code to the end of the file ---------------------------------
+
+
+//-------------------------------------------------------------------------------------------------------------------
+// Optimized version of the code
+//-------------------------------------------------------------------------------------------------------------------

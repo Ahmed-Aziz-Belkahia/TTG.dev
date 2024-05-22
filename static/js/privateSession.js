@@ -1,237 +1,381 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var tabs = document.querySelectorAll('ul.tabs li');
-    var nextTabButtons = document.querySelectorAll('.next-tab-btn');
-    var prevTabButtons = document.querySelectorAll('.back-tab-btn');
+// document.addEventListener('DOMContentLoaded', function() {
+//     var tabs = document.querySelectorAll('ul.tabs li');
+//     var nextTabButtons = document.querySelectorAll('.next-tab-btn');
+//     var prevTabButtons = document.querySelectorAll('.back-tab-btn');
   
-    // Function to switch tabs
-    function switchTab(tabId) {
-        tabs.forEach(function(item) {
-            item.classList.remove('current');
-        });
-        var tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(function(content) {
-            content.classList.remove('current');
-        });
+//     // Function to switch tabs
+//     function switchTab(tabId) {
+//         tabs.forEach(function(item) {
+//             item.classList.remove('current');
+//         });
+//         var tabContents = document.querySelectorAll('.tab-content');
+//         tabContents.forEach(function(content) {
+//             content.classList.remove('current');
+//         });
   
-        var selectedTab = document.querySelector('ul.tabs li[data-tab="' + tabId + '"]');
-        selectedTab.classList.add('current');
-        document.getElementById(tabId).classList.add('current');
-    }
+//         var selectedTab = document.querySelector('ul.tabs li[data-tab="' + tabId + '"]');
+//         selectedTab.classList.add('current');
+//         document.getElementById(tabId).classList.add('current');
+//     }
   
-    // Event listener for tab clicks
-    tabs.forEach(function(tab) {
-        tab.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default action (switching tabs)
-        });
-    });
+//     // Event listener for tab clicks
+//     tabs.forEach(function(tab) {
+//         tab.addEventListener('click', function(event) {
+//             event.preventDefault(); // Prevent the default action (switching tabs)
+//         });
+//     });
   
-    // Event listener for next tab buttons
-    nextTabButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            var currentTab = document.querySelector('ul.tabs li.current');
-            var currentIndex = Array.from(tabs).indexOf(currentTab);
-            var nextIndex = (currentIndex + 1) % tabs.length;
-            var nextTabId = tabs[nextIndex].getAttribute('data-tab');
-            switchTab(nextTabId);
-        });
-    });
+//     // Event listener for next tab buttons
+//     nextTabButtons.forEach(function(button) {
+//         button.addEventListener('click', function() {
+//             var currentTab = document.querySelector('ul.tabs li.current');
+//             var currentIndex = Array.from(tabs).indexOf(currentTab);
+//             var nextIndex = (currentIndex + 1) % tabs.length;
+//             var nextTabId = tabs[nextIndex].getAttribute('data-tab');
+//             switchTab(nextTabId);
+//         });
+//     });
   
-    // Event listener for previous tab buttons
-    prevTabButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            var currentTab = document.querySelector('ul.tabs li.current');
-            var currentIndex = Array.from(tabs).indexOf(currentTab);
-            var prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-            var prevTabId = tabs[prevIndex].getAttribute('data-tab');
-            switchTab(prevTabId);
-        });
-    });
-  });
+//     // Event listener for previous tab buttons
+//     prevTabButtons.forEach(function(button) {
+//         button.addEventListener('click', function() {
+//             var currentTab = document.querySelector('ul.tabs li.current');
+//             var currentIndex = Array.from(tabs).indexOf(currentTab);
+//             var prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+//             var prevTabId = tabs[prevIndex].getAttribute('data-tab');
+//             switchTab(prevTabId);
+//         });
+//     });
+//   });
   
 
-form = document.querySelector(".sessionForm")
-submitButton = document.querySelector(".DoneSubmit")
+// form = document.querySelector(".sessionForm")
+// submitButton = document.querySelector(".DoneSubmit")
 
-submitButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    formData = new FormData(form);
+// submitButton.addEventListener("click", function (event) {
+//     event.preventDefault();
+//     formData = new FormData(form);
 
-    let isValid = true;
+//     let isValid = true;
 
-    // Check if any required fields are empty
-    for (const input of form.querySelectorAll("input[required]")) {
-        if (!input.value.trim()) {
-            isValid = false;
-            input.classList.add("error");
-        } else {
-            input.classList.remove("error");
-        }
-    }
-
-    if (!isValid) {
-        alert("Please fill in all required fields.");
-        return;
-    }
-
-    // Check for empty values in formData
-    for (const entry of formData.entries()) {
-        if (entry[1].trim() === '') {
-            isValid = false;
-            break; // Exit the loop if any empty value found
-        }
-    }
-
-    if (!isValid) {
-        popupMessage.classList.remove('success'); // Ensure class is correctly managed
-        popupSpan.textContent = "Please fill in all fields!";
-        popupMessage.classList.add('popup-show');
-                // Close button functionality
-                document.getElementById('popUpCloseButton').addEventListener('click', function() {
-                    popupMessage.classList.remove('popup-show');
-                });
-        return;
-    }
-
-    $.ajax({
-        type: 'POST',
-        url: '/schedulePrivateSession/',
-        data: formData,
-        processData: false,
-        contentType: false,
-        beforeSend: function(xhr, settings) {
-            xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
-        },
-        success: function(response) {
-            console.log(response);
-            replaceScheduleBodyWithDoneContent();
-        },
-        error: function(error) {
-            console.error('Error filtering products:', error);
-        }
-    });
-
-});
-
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
-
-  // Sample unavailable days (you can replace this with your logic)
-// Sample unavailable days (you can replace this with your logic)
-const unavailableDays = [2, 5, 8, 12, 15];
-
-const calendar = document.querySelector('.calendar');
-const selectedDateInput = document.getElementById('selectedDateInput');
-const selectedDateForm = document.getElementById('selectedDateForm');
-
-// // Generate calendar days
-// function generateCalendar() {
-//     const daysInMonth = 31; // You can adjust this based on the actual month
-//     for (let i = 1; i <= daysInMonth; i++) {
-//         const dayElement = document.createElement('div');
-//         dayElement.textContent = i;
-//         dayElement.classList.add('calendar-day');
-
-//         if (unavailableDays.includes(i)) {
-//             dayElement.classList.add('unavailable');
+//     // Check if any required fields are empty
+//     for (const input of form.querySelectorAll("input[required]")) {
+//         if (!input.value.trim()) {
+//             isValid = false;
+//             input.classList.add("error");
 //         } else {
-//             // Add event listener only if the day is available
-//             dayElement.addEventListener('click', function() {
-//                 if (!this.classList.contains('unavailable')) {
-//                     // Clear previously selected day
-//                     const selectedDay = document.querySelector('.calendar-day.selected');
-//                     if (selectedDay) {
-//                         selectedDay.classList.remove('selected');
-//                     }
-
-//                     // Mark current day as selected
-//                     this.classList.add('selected');
-//                     selectedDateInput.value = i;
-//                 }
-//             });
+//             input.classList.remove("error");
 //         }
+//     }
 
-//         calendar.appendChild(dayElement);
+//     if (!isValid) {
+//         alert("Please fill in all required fields.");
+//         return;
+//     }
+
+//     // Check for empty values in formData
+//     for (const entry of formData.entries()) {
+//         if (entry[1].trim() === '') {
+//             isValid = false;
+//             break; // Exit the loop if any empty value found
+//         }
+//     }
+
+//     if (!isValid) {
+//         popupMessage.classList.remove('success'); // Ensure class is correctly managed
+//         popupSpan.textContent = "Please fill in all fields!";
+//         popupMessage.classList.add('popup-show');
+//                 // Close button functionality
+//                 document.getElementById('popUpCloseButton').addEventListener('click', function() {
+//                     popupMessage.classList.remove('popup-show');
+//                 });
+//         return;
+//     }
+
+//     $.ajax({
+//         type: 'POST',
+//         url: '/schedulePrivateSession/',
+//         data: formData,
+//         processData: false,
+//         contentType: false,
+//         beforeSend: function(xhr, settings) {
+//             xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
+//         },
+//         success: function(response) {
+//             console.log(response);
+//             replaceScheduleBodyWithDoneContent();
+//         },
+//         error: function(error) {
+//             console.error('Error filtering products:', error);
+//         }
+//     });
+
+// });
+
+
+// function getCookie(name) {
+//     let cookieValue = null;
+//     if (document.cookie && document.cookie !== '') {
+//         const cookies = document.cookie.split(';');
+//         for (let i = 0; i < cookies.length; i++) {
+//             const cookie = cookies[i].trim();
+//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;
+//   }
+
+//   // Sample unavailable days (you can replace this with your logic)
+// // Sample unavailable days (you can replace this with your logic)
+// const unavailableDays = [2, 5, 8, 12, 15];
+
+// const calendar = document.querySelector('.calendar');
+// const selectedDateInput = document.getElementById('selectedDateInput');
+// const selectedDateForm = document.getElementById('selectedDateForm');
+
+// // // Generate calendar days
+// // function generateCalendar() {
+// //     const daysInMonth = 31; // You can adjust this based on the actual month
+// //     for (let i = 1; i <= daysInMonth; i++) {
+// //         const dayElement = document.createElement('div');
+// //         dayElement.textContent = i;
+// //         dayElement.classList.add('calendar-day');
+
+// //         if (unavailableDays.includes(i)) {
+// //             dayElement.classList.add('unavailable');
+// //         } else {
+// //             // Add event listener only if the day is available
+// //             dayElement.addEventListener('click', function() {
+// //                 if (!this.classList.contains('unavailable')) {
+// //                     // Clear previously selected day
+// //                     const selectedDay = document.querySelector('.calendar-day.selected');
+// //                     if (selectedDay) {
+// //                         selectedDay.classList.remove('selected');
+// //                     }
+
+// //                     // Mark current day as selected
+// //                     this.classList.add('selected');
+// //                     selectedDateInput.value = i;
+// //                 }
+// //             });
+// //         }
+
+// //         calendar.appendChild(dayElement);
+// //     }
+// // }
+
+// // Call the function to generate the calendar
+// // generateCalendar();
+
+
+// function replaceScheduleBodyWithDoneContent() {
+//     const scheduleBody = document.querySelector('.schedule-body');
+//     if (scheduleBody) {
+//         // Clear existing content
+//         scheduleBody.innerHTML = '';
+
+//         // Create the new content
+//         const doneBody = document.createElement('div');
+//         doneBody.classList.add('schedule-body', 'done-body');
+
+//         const scheduleBodyLeft = document.createElement('div');
+//         scheduleBodyLeft.classList.add('schedule-body-left');
+//         const doneImg = document.createElement('img');
+//         doneImg.src = "/static/assets/done.svg";
+//         doneImg.width = "340px";
+//         doneImg.height = "340px";
+//         doneImg.alt = "Schedule Done";
+//         doneImg.classList.add('jello-horizontal');
+//         scheduleBodyLeft.appendChild(doneImg);
+
+//         const scheduleBodyRight = document.createElement('div');
+//         scheduleBodyRight.classList.add('schedule-body-right');
+//         const doneContainer = document.createElement('div');
+//         doneContainer.classList.add('done-container');
+//         const span1 = document.createElement('span');
+//         span1.textContent = "Thank you for expressing interest in a private session";
+//         const span2 = document.createElement('span');
+//         span2.textContent = "We're excited to connect with you! Expect a follow-up from us in 3 to 5 business days. Thanks for reaching out!";
+//         const goBackLink = document.createElement('a');
+//         goBackLink.href = "#";
+//         goBackLink.classList.add('next-tab-btn');
+//         goBackLink.textContent = "Go Back";
+//         doneContainer.appendChild(span1);
+//         doneContainer.appendChild(span2);
+//         doneContainer.appendChild(goBackLink);
+//         scheduleBodyRight.appendChild(doneContainer);
+
+//         doneBody.appendChild(scheduleBodyLeft);
+//         doneBody.appendChild(scheduleBodyRight);
+
+//         // Replace the schedule-body content with the new content
+//         scheduleBody.appendChild(doneBody);
+
+//         // Prevent default action and handle go back functionality
+//         goBackLink.addEventListener('click', function(event) {
+//             event.preventDefault();
+//             // Call a function to handle what happens when "Go Back" is clicked
+//             handleGoBack();
+//         });
 //     }
 // }
 
-// Call the function to generate the calendar
-// generateCalendar();
+// function handleGoBack() {
+//     // Example function to revert to the previous view or perform another action
+//     const scheduleBody = document.querySelector('.schedule-body');
+//     if (scheduleBody) {
+//         // Code to restore the previous content or switch views
+//         // This needs to be adapted based on how you manage views/states in your application
+//     }
+// }
 
 
-function replaceScheduleBodyWithDoneContent() {
-    const scheduleBody = document.querySelector('.schedule-body');
-    if (scheduleBody) {
-        // Clear existing content
-        scheduleBody.innerHTML = '';
 
-        // Create the new content
-        const doneBody = document.createElement('div');
-        doneBody.classList.add('schedule-body', 'done-body');
 
-        const scheduleBodyLeft = document.createElement('div');
-        scheduleBodyLeft.classList.add('schedule-body-left');
-        const doneImg = document.createElement('img');
-        doneImg.src = "/static/assets/done.svg";
-        doneImg.width = "340px";
-        doneImg.height = "340px";
-        doneImg.alt = "Schedule Done";
-        doneImg.classList.add('jello-horizontal');
-        scheduleBodyLeft.appendChild(doneImg);
+// Optimized version of the above code
 
-        const scheduleBodyRight = document.createElement('div');
-        scheduleBodyRight.classList.add('schedule-body-right');
-        const doneContainer = document.createElement('div');
-        doneContainer.classList.add('done-container');
-        const span1 = document.createElement('span');
-        span1.textContent = "Thank you for expressing interest in a private session";
-        const span2 = document.createElement('span');
-        span2.textContent = "We're excited to connect with you! Expect a follow-up from us in 3 to 5 business days. Thanks for reaching out!";
-        const goBackLink = document.createElement('a');
-        goBackLink.href = "#";
-        goBackLink.classList.add('next-tab-btn');
-        goBackLink.textContent = "Go Back";
-        doneContainer.appendChild(span1);
-        doneContainer.appendChild(span2);
-        doneContainer.appendChild(goBackLink);
-        scheduleBodyRight.appendChild(doneContainer);
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('ul.tabs li');
+    const nextTabButtons = document.querySelectorAll('.next-tab-btn');
+    const prevTabButtons = document.querySelectorAll('.back-tab-btn');
+    const form = document.querySelector(".sessionForm");
+    const submitButton = document.querySelector(".DoneSubmit");
+    const popupMessage = document.getElementById('popupMessage');
+    const popupSpan = document.getElementById('popupSpan');
+    const errorPopupMessage = document.getElementById('ErrorPopupMessage');
+    const errorPopupSpan = document.getElementById('ErrorPopupSpan');
 
-        doneBody.appendChild(scheduleBodyLeft);
-        doneBody.appendChild(scheduleBodyRight);
-
-        // Replace the schedule-body content with the new content
-        scheduleBody.appendChild(doneBody);
-
-        // Prevent default action and handle go back functionality
-        goBackLink.addEventListener('click', function(event) {
-            event.preventDefault();
-            // Call a function to handle what happens when "Go Back" is clicked
-            handleGoBack();
-        });
+    function switchTab(tabId) {
+        tabs.forEach(item => item.classList.remove('current'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('current'));
+        document.querySelector(`ul.tabs li[data-tab="${tabId}"]`).classList.add('current');
+        document.getElementById(tabId).classList.add('current');
     }
-}
 
-function handleGoBack() {
-    // Example function to revert to the previous view or perform another action
-    const scheduleBody = document.querySelector('.schedule-body');
-    if (scheduleBody) {
+    tabs.forEach(tab => tab.addEventListener('click', event => event.preventDefault()));
+
+    nextTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const currentTab = document.querySelector('ul.tabs li.current');
+            const currentIndex = Array.from(tabs).indexOf(currentTab);
+            const nextIndex = (currentIndex + 1) % tabs.length;
+            const nextTabId = tabs[nextIndex].getAttribute('data-tab');
+            switchTab(nextTabId);
+        });
+    });
+
+    prevTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const currentTab = document.querySelector('ul.tabs li.current');
+            const currentIndex = Array.from(tabs).indexOf(currentTab);
+            const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            const prevTabId = tabs[prevIndex].getAttribute('data-tab');
+            switchTab(prevTabId);
+        });
+    });
+
+    submitButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+
+        let isValid = Array.from(form.querySelectorAll("input[required]")).every(input => {
+            const valid = input.value.trim();
+            input.classList.toggle("error", !valid);
+            return valid;
+        });
+
+        if (!isValid) {
+            showErrorPopupMessage("Please fill in all required fields.");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/schedulePrivateSession/',
+            data: formData,
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRFToken', getCookie("csrftoken"));
+            },
+            success: function(response) {
+                console.log(response);
+                replaceScheduleBodyWithDoneContent();
+            },
+            error: function(error) {
+                console.error('Error scheduling session:', error);
+                showErrorPopupMessage("There was an error submitting your session.");
+            }
+        });
+    });
+
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const trimmedCookie = cookie.trim();
+            if (trimmedCookie.startsWith(name + '=')) {
+                return decodeURIComponent(trimmedCookie.substring(name.length + 1));
+            }
+        }
+        return null;
+    }
+
+    function showPopupMessage(message) {
+        popupSpan.textContent = message;
+        popupMessage.style.display = 'block';
+
+        setTimeout(() => {
+            popupMessage.classList.add('fade-out');
+            setTimeout(() => {
+                popupMessage.style.display = 'none';
+                popupMessage.classList.remove('fade-out');
+            }, 1000);
+        }, 1000);
+    }
+
+    function showErrorPopupMessage(message) {
+        errorPopupSpan.textContent = message;
+        errorPopupMessage.style.display = 'block';
+
+        setTimeout(() => {
+            errorPopupMessage.classList.add('fade-out');
+            setTimeout(() => {
+                errorPopupMessage.style.display = 'none';
+                errorPopupMessage.classList.remove('fade-out');
+            }, 1000);
+        }, 1000);
+    }
+
+    function replaceScheduleBodyWithDoneContent() {
+        const scheduleBody = document.querySelector('.schedule-body');
+        if (scheduleBody) {
+            scheduleBody.innerHTML = `
+                <div class="schedule-body done-body">
+                    <div class="schedule-body-left">
+                        <img src="/static/assets/done.svg" width="340" height="340" alt="Schedule Done" class="jello-horizontal">
+                    </div>
+                    <div class="schedule-body-right">
+                        <div class="done-container">
+                            <span>Thank you for expressing interest in a private session</span>
+                            <span>We're excited to connect with you! Expect a follow-up from us in 3 to 5 business days. Thanks for reaching out!</span>
+                            <a href="#" class="next-tab-btn">Go Back</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('.next-tab-btn').addEventListener('click', handleGoBack);
+        }
+    }
+
+    function handleGoBack(event) {
+        event.preventDefault();
         // Code to restore the previous content or switch views
         // This needs to be adapted based on how you manage views/states in your application
     }
-}
 
 
-
-
+});
