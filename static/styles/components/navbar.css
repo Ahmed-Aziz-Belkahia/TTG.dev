@@ -227,6 +227,8 @@ span.sort-by-up-arrow {
 	justify-content: center;
 	align-items: center;
 	border: 1px solid #fafafa;
+	object-fit: cover; /* This ensures the image covers the container while maintaining aspect ratio */
+
 }
 
 .username {
@@ -712,6 +714,7 @@ span.sort-by-up-arrow {
 	justify-content: center;
 	align-items: center;
 	border: 1px solid #fafafa;
+	object-fit: cover; /* This ensures the image covers the container while maintaining aspect ratio */
 
 }
 

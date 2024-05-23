@@ -6,18 +6,7 @@
 {% endblock head %}
 
 {% block content %}
-    <div class="dropdown">
-        <button class="dropbtn">Levels</button>
-        <div class="dropdown-content">
-            {% if adminform.form.instance.pk %}
-                {% for level in adminform.form.instance.admin_levels.all %}
-                    <a href="#" class="toggle-level" data-level-id="{{ level.id }}">{{ level.title }}</a>
-                {% endfor %}
-            {% else %}
-                <p>Save the course to add levels.</p>
-            {% endif %}
-        </div>
-    </div>
-    <script src="{% static 'js/admin_custom.js' %}"></script>
+    <div class="dropdown"></div>
+    <script src="{% static 'js/collapsible_inlines.js' %}"></script>
     {{ block.super }}
 {% endblock %}

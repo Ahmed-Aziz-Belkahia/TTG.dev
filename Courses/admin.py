@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin
+from django.utils.html import mark_safe
 from .models import Course, Level, Module, Video, Quiz, UserCourseProgress
 
 class QuizInline(admin.StackedInline):
@@ -19,7 +21,6 @@ class LevelInline(admin.StackedInline):
     extra = 0
     inlines = [ModuleInline]
 
-@admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ['title', 'course_image', 'professor', 'price', 'members_count']
     search_fields = ['title', 'description', 'professor__name']
@@ -32,6 +33,11 @@ class CourseAdmin(admin.ModelAdmin):
     )
     inlines = [LevelInline, ModuleInline, VideoInline, QuizInline]
 
+    class Media:
+        js = ('js/collapsible_inlines.js',)
+
+admin.site.register(Course, CourseAdmin)
+
 @admin.register(UserCourseProgress)
 class UserCourseProgressAdmin(admin.ModelAdmin):
-    pass  # No need for inlines for UserCourseProgress admin
+    pass

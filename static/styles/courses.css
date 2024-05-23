@@ -795,10 +795,54 @@
 	transform: rotateY(180deg);
 }
 
-.popular-courses {
-	justify-content: center;
-	display: flex;
+
+
+.refresh-button {
+	display: inline-block;
+	padding: 10px 20px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #ffffff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	text-align: center;
+	text-decoration: none;
 }
+
+.refresh-button:hover {
+	background-color: #0056b3;
+}
+
+.no-courses-message {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    color: #ffffff;
+	background: linear-gradient(100deg, #260fb8 -36.4%, #9747ff 131.27%);
+
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 15px;
+    align-items: center;
+    width: 440px;
+}
+
+.no-courses-message svg {
+	margin-bottom: 10px;
+}
+
+
+.popular-courses {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    height: 35vh;
+}
+
 
 @media screen and (max-width: 1440px) {
 	/*   .course-list > .course {

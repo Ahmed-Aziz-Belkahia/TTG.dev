@@ -192,7 +192,12 @@ body {
 	/* 171.429% */
 	text-transform: capitalize;
 }
-
+.f{
+	color: #fff;
+	font-family: "Poppins", sans-serif;
+	font-size: 16px;
+	font-style: normal;
+}
 .delete-icon {
 	background: none;
 	border: none;
@@ -334,21 +339,35 @@ body {
 	border: none;
 	text-decoration: none;
 }
-
+.-flex {
+	color: #fff;
+	font-family: "Poppins", sans-serif;
+	font-size: large;
+	font-weight: 700;
+}
 .shopping-cart>.h1-text {
 	/* margin-bottom: 1rem; */
 }
-
+.shopping-cart {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: 60vh;
+}
 span.p-text {
 	font-size: medium;
 }
 
 .empty-cart {
-	display: none;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	padding: 1rem;
+	
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* padding: 1rem; */
+    height: inherit;
 }
 
 .empty-cart>img {

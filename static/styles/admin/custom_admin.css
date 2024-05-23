@@ -397,3 +397,20 @@ a:hover {
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+
+.add-row > .btn-sm{
+    background-color: #3e8e41;
+    color: #ffffff;
+    font-family: Poppins;
+    font-weight: 600;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    border: none;
+}
+div.inline-related{
+    padding: 0;
+}
+#jazzy-carousel .carousel-indicators li {
+    background-color: #3e8e41;
+    border: 1px solid #3e8e41;
+}
