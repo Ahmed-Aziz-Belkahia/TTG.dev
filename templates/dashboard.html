@@ -16,84 +16,87 @@
 {% block main %}
 <div class="dashboard-container">
     <div class="dashboard-top">
-        <div class="dashboard-top-left">
-            <div class="top-left-dash">
-                <div class="top-balance">
-                    <div class="container-div-balance">
-                        <div class="wrap-balance-icn">
-                            <span class="title-balance">Students Balance</span>
-                            <div class="tooltip">
-                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
-                                    <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
-                                        <g transform="scale(5.33333,5.33333)">
-                                            <path d="M24,4c-11.02793,0 -20,8.97207 -20,20c0,11.02793 8.97207,20 20,20c11.02793,0 20,-8.97207 20,-20c0,-11.02793 -8.97207,-20 -20,-20zM24,7c9.40662,0 17,7.59339 17,17c0,9.40661 -7.59338,17 -17,17c-9.40661,0 -17,-7.59339 -17,-17c0,-9.40661 7.59339,-17 17,-17zM24,14c-1.10457,0 -2,0.89543 -2,2c0,1.10457 0.89543,2 2,2c1.10457,0 2,-0.89543 2,-2c0,-1.10457 -0.89543,-2 -2,-2zM23.97656,20.97852c-0.82766,0.01293 -1.48843,0.69381 -1.47656,1.52148v11c-0.00765,0.54095 0.27656,1.04412 0.74381,1.31683c0.46725,0.27271 1.04514,0.27271 1.51238,0c0.46725,-0.27271 0.75146,-0.77588 0.74381,-1.31683v-11c0.00582,-0.40562 -0.15288,-0.7963 -0.43991,-1.08296c-0.28703,-0.28666 -0.67792,-0.44486 -1.08353,-0.43852z"></path>
+        {% comment %} <div class="dashboard-top-left-container"> {% endcomment %}
+            <div class="dashboard-top-left">
+                <div class="top-left-dash">
+                    <div class="top-balance">
+                        <div class="container-div-balance">
+                            <div class="wrap-balance-icn">
+                                <span class="title-balance">Students Balance</span>
+                                <div class="tooltip">
+                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
+                                        <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                            <g transform="scale(5.33333,5.33333)">
+                                                <path d="M24,4c-11.02793,0 -20,8.97207 -20,20c0,11.02793 8.97207,20 20,20c11.02793,0 20,-8.97207 20,-20c0,-11.02793 -8.97207,-20 -20,-20zM24,7c9.40662,0 17,7.59339 17,17c0,9.40661 -7.59338,17 -17,17c-9.40661,0 -17,-7.59339 -17,-17c0,-9.40661 7.59339,-17 17,-17zM24,14c-1.10457,0 -2,0.89543 -2,2c0,1.10457 0.89543,2 2,2c1.10457,0 2,-0.89543 2,-2c0,-1.10457 -0.89543,-2 -2,-2zM23.97656,20.97852c-0.82766,0.01293 -1.48843,0.69381 -1.47656,1.52148v11c-0.00765,0.54095 0.27656,1.04412 0.74381,1.31683c0.46725,0.27271 1.04514,0.27271 1.51238,0c0.46725,-0.27271 0.75146,-0.77588 0.74381,-1.31683v-11c0.00582,-0.40562 -0.15288,-0.7963 -0.43991,-1.08296c-0.28703,-0.28666 -0.67792,-0.44486 -1.08353,-0.43852z"></path>
+                                            </g>
                                         </g>
-                                    </g>
-                                </svg>
-                                <!-- <span class="tooltiptext">This is the total amount accumulated by all traders on this website.</span> -->
+                                    </svg>
+                                    <!-- <span class="tooltiptext">This is the total amount accumulated by all traders on this website.</span> -->
+                                </div>
                             </div>
+                            
+                            
+                            <span class="amount-balance balance" data-balance="{{dashboard.calculate_total_balance}}">
+                                {{dashboard.calculate_total_balance}}$
+                            </span>
+    
                         </div>
-                        
-                        
-                        <span class="amount-balance balance" data-balance="{{dashboard.calculate_total_balance}}">
-                            {{dashboard.calculate_total_balance}}$
-                        </span>
-
-                    </div>
-
-                    <div class="container-div-balance">
-                        <div class="wrap-balance-icn">
-                        <span class="title-balance">Monthly Objective</span>
-                    </div>
-                        <span class="amount-balance objectif">{{dashboard.objectif}}$</span>
-                    </div>
-
-                    <div class="container-div-balance">
-                        <div class="profits-divs">
-                            <span class="title-balance">Profits</span>
-                            <div class="icons-spans-balance-profits">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
-                                    fill="none">
-                                    <path
-                                        d="M5.40914 5.90914L4.04543 7.27284C3.54333 7.77495 2.72926 7.77495 2.22716 7.27284C1.72505 6.77074 1.72505 5.95667 2.22716 5.45457L3.59086 4.09086L0 0.5H9V9.5L5.40914 5.90914Z"
-                                        fill="#05CD99" />
-                                </svg>
-                                <span class="icons-up-green" data-change-percentage="{{dashboard.calculate_change_percentage}}">
-                                    {{dashboard.calculate_change_percentage}}%
-                                </span>
+    
+                        <div class="container-div-balance">
+                            <div class="wrap-balance-icn">
+                            <span class="title-balance">Monthly Objective</span>
+                        </div>
+                            <span class="amount-balance objectif">{{dashboard.objectif}}$</span>
+                        </div>
+    
+                        <div class="container-div-balance">
+                            <div class="profits-divs">
+                                <span class="title-balance">Profits</span>
+                                <div class="icons-spans-balance-profits">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
+                                        fill="none">
+                                        <path
+                                            d="M5.40914 5.90914L4.04543 7.27284C3.54333 7.77495 2.72926 7.77495 2.22716 7.27284C1.72505 6.77074 1.72505 5.95667 2.22716 5.45457L3.59086 4.09086L0 0.5H9V9.5L5.40914 5.90914Z"
+                                            fill="#05CD99" />
+                                    </svg>
+                                    <span class="icons-up-green" data-change-percentage="{{dashboard.calculate_change_percentage}}">
+                                        {{dashboard.calculate_change_percentage}}%
+                                    </span>
+                                </div>
                             </div>
+                            <span class="amount-balance-profits profits" data-balance="{{dashboard.get_changes_today}}">
+                                +${{dashboard.get_changes_today}}
+                            </span>
                         </div>
-                        <span class="amount-balance-profits profits" data-balance="{{dashboard.get_changes_today}}">
-                            +${{dashboard.get_changes_today}}
-                        </span>
-                    </div>
-
-                    <div class="container-div-balance">
-                        <div class="losses-divs">
-                            <span class="title-balance">Losses</span>
-                            <div class="icons-spans-balance-losses">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
-                                    fill="none">
-                                    <path
-                                        d="M5.40914 4.09086L4.04543 2.72716C3.54333 2.22505 2.72926 2.22505 2.22716 2.72716C1.72505 3.22926 1.72505 4.04333 2.22716 4.54543L3.59086 5.90914L0 9.5H9V0.5L5.40914 4.09086Z"
-                                        fill="#D83D6C" />
-                                </svg>
-                                <span class="icons-up-red" data-change-percentage="{{dashboard.calculate_change_percentage}}">
-                                    {{dashboard.calculate_change_percentage}}%
-                                </span>
+    
+                        <div class="container-div-balance">
+                            <div class="losses-divs">
+                                <span class="title-balance">Losses</span>
+                                <div class="icons-spans-balance-losses">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10"
+                                        fill="none">
+                                        <path
+                                            d="M5.40914 4.09086L4.04543 2.72716C3.54333 2.22505 2.72926 2.22505 2.22716 2.72716C1.72505 3.22926 1.72505 4.04333 2.22716 4.54543L3.59086 5.90914L0 9.5H9V0.5L5.40914 4.09086Z"
+                                            fill="#D83D6C" />
+                                    </svg>
+                                    <span class="icons-up-red" data-change-percentage="{{dashboard.calculate_change_percentage}}">
+                                        {{dashboard.calculate_change_percentage}}%
+                                    </span>
+                                </div>
                             </div>
+                            <span class="amount-balance-losses losses" data-balance="{{dashboard.get_changes_today}}">
+                                -${{dashboard.get_changes_today}}
+                            </span>
                         </div>
-                        <span class="amount-balance-losses losses" data-balance="{{dashboard.get_changes_today}}">
-                            -${{dashboard.get_changes_today}}
-                        </span>
+                    </div>
+                    <div class="charts">
+                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
-                <div class="charts">
-                    <canvas id="myChart"></canvas>
-                </div>
+    
             </div>
-
-        </div>
+        {% comment %} </div> {% endcomment %}
+        
         <div class="dashboard-top-right">
             <div class="add-transaction">
                 <div class="top-trensac">

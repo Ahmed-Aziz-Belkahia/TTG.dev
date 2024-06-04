@@ -11,10 +11,30 @@
         <span class="h1-text">Popular Courses</span>
         <div class="nav"></div>
         <div class="popular-courses">
-            <div class="course-list">
+            <div class="slideshow-container">
+                {% comment %} <div class="course-list"> {% endcomment %}
                 {% if courses %}
                     {% for course in courses %}
-                        <a href="{% url 'levels' course_id=course.id %}" class="course volls" style="background: url('{{course.img.url}}') no-repeat center; background-size: 155% 100%;">
+                    <a class="mySlides fade" style="background-image: url('{{course.img.url}}')" href="{% url 'levels' course_id=course.id %}">
+                        {% comment %} <div class="layer"></div> {% endcomment %}
+                        <div class="course-layout">
+                            <div class="course-header">
+                                <div class="course-owner">
+                                    <span class="h1-text">{{course.professor.user.user.username}}</span>
+                                    <span class="p-text">{{course.professor.description}}</span>
+                                </div>
+                                <div class="course-pricing">
+                                    <span class="price">{{course.price}} DT - Monthly</span>
+                                </div>
+                            </div>
+                            <div class="course-title">
+                                <span class="h1-text">{{course.title}}</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                        {% comment %} <a href="{% url 'levels' course_id=course.id %}" class="course volls" style="background: url('{{course.img.url}}') no-repeat center; background-size: 155% 100%;">
                             <div class="layer"></div>
                             <div class="course-layout">
                                 <div class="course-header">
@@ -25,15 +45,16 @@
                                     </div>
                                     <div class="course-pricing">
                                         <span class="price">{{course.price}} DT - Monthly</span>
-                                        {% comment %} <span class="duration">82 min</span> {% endcomment %}
                                     </div>
                                 </div>
                                 <div class="course-title">
                                     <span class="h1-text">{{course.title}}</span>
                                 </div>
                             </div>
-                        </a>
+                        </a> {% endcomment %}
                     {% endfor %}
+                    
+
                 {% else %}
                     <div id="no-courses-message" class="no-courses-message">
                         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
@@ -61,5 +82,34 @@
                 console.log("No courses available. Please refresh the page and contact the support team.");
             }
         });
+
+let slideIndex = 1;
+showSlides(slideIndex);
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  let i;
+  let slides = document.getElementsByClassName("mySlides");
+  let dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "flex";
+  dots[slideIndex-1].className += " active";
+}
     </script>
 {% endblock scripts %}

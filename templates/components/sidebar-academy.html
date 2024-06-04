@@ -62,7 +62,8 @@
                                 <div class="step">
                                     <div class="flex-right-intro">
                                         <div class="icon-done">
-                                            <img class="icon-done-iamg" src="{% static 'assets/done-step.png' %}" alt="icon-done">
+                                            <div class="icon-check-done"></div>
+                                            {% comment %} <img class="icon-done-iamg" src="{% static 'assets/done-step.png' %}" alt="icon-done"> {% endcomment %}
                                         </div>
                                         <div class="step-title">
                                             <span class="title-text">{{video.title}}</span>
@@ -96,5 +97,32 @@
             modulesDropdowns.classList.toggle('open');
         });
     });
+
+    // the active video
+    const module_videos = document.getElementsByClassName('icon-done')
+    for(let i =0 ; i<= module_videos.length; i++ ){
+        if(i==1){
+            module_videos[i].style.borderLeftColor= '#ffca28'
+        }
+    }
+
+    //the watched videos
+    const module_videos_check = document.getElementsByClassName('icon-check-done')
+    for(let i =0 ; i<= module_videos_check.length; i++ ){
+        if(i==0){
+            module_videos_check[i].textContent = "\u2713";
+        }
+    }
+
+    //the not allowed videos
+    const module_videos_step = document.getElementsByClassName('step')
+    for(let i =0 ; i<= module_videos_step.length; i++ ){
+        if(i>1){
+            module_videos_step[i].style.cursor = "not-allowed"
+            module_videos_step[i].querySelector('.button-icon').style.display = "none"
+            console.log('module_videos_step',module_videos_step[i].querySelector('.button-icon'))
+        }
+    }
+    
 </script>
 {% comment %} <script src="{% static 'js/sidebar-academy.js' %}"></script> {% endcomment %}

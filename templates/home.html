@@ -109,8 +109,9 @@
         </div>          
       </div>
       <div class="claim">
-        <button class="claim-button" id="claimPoints"><span>Claim Now</span><img src="{% static "assets/claim-btn.svg" %}" /></button>
+        <button class="claim-button" id="claimPoints"><span id="claimPointsText">Claim Now</span><img src="{% static "assets/claim-btn.svg" %}" /></button>
       </div>
+      <span hidden id="lastClaimedPoints">{{request.user.customuser.last_added_points_time}}</span>
     </div>
 
   </div>
